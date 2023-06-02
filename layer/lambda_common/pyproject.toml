@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "event-receiver"
+version = "0.1.0"
+description = ""
+authors = ["katsut"]
+readme = "README.md"
+packages = [{include = "event_receiver"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+aws-lambda-powertools = "^2.16.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
