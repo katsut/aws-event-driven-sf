@@ -1,0 +1,40 @@
+{
+	"folders": [
+		{
+			"path": ".",
+			"exclude": {
+				"cdk": true,
+			}
+		},
+		{
+			"path": "cdk",
+		},
+	],
+	"settings": {
+		"python.formatting.provider": "black",
+		"python.linting.flake8Args": [
+		  "--ignore=W503",
+		  "--max-line-length=150",
+		  "--max-compexity=20"
+		],
+		"python.linting.flake8Enabled": true,
+		"python.analysis.autoImportCompletions": true,
+		"[python]": {
+		  "editor.formatOnSave": true,
+		  "editor.defaultFormatter": "ms-python.black-formatter",
+		  "editor.codeActionsOnSave": {
+			"source.organizeImports": true,
+			"source.fixAll": true
+		  }
+		},
+		"python.testing.pytestEnabled": true,
+		"python.testing.pytestPath": "poetry run pytest",
+		"files.exclude": {
+		  "**/__pycache__": true,
+		  "**/.pytest_cache": true,
+		  "**/*.iml": true,
+		  ".coverage": true,
+		  "dist": true
+		}
+	}
+}
