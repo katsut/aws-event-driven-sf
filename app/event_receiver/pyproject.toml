@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "event_receiver"
+version = "0.1.0"
+description = ""
+authors = ["katsut"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+[tool.poetry.group.dev.dependencies]
+lambda-common = {path = "../../layer/lambda_common", develop = true}
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
