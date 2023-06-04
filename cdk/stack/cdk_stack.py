@@ -14,3 +14,14 @@ class CdkStack(Stack):
                 aws_lambda.Runtime.PYTHON_3_10,
             ],
         )
+
+        event_receiver = aws_lambda.Function(
+            self,
+            "workflows-api",
+            runtime=aws_lambda.Runtime.PYTHON_3_10,
+            handler="workflow.index.handler",
+            code=aws_lambda.Code.from_asset("../app/event_receiver/dist/module.zip"),
+            layers=[lambda_common_layer],
+            environment={},
+            tracing=aws_lambda.Tracing.ACTIVE,
+        )
