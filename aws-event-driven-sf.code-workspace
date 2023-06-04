@@ -12,7 +12,7 @@
 			"path": "cdk",
 		},
 		{
-			"path": "app",
+			"path": "app/event_receiver",
 		},
 		{
 			"path": "layer",
