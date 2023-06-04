@@ -3,12 +3,20 @@
 		{
 			"path": ".",
 			"exclude": {
-				"cdk": true,
+				"**/cdk": true,
+				"**/app": true,
+				"**/layer": true,
 			}
 		},
 		{
 			"path": "cdk",
 		},
+		{
+			"path": "app",
+		},
+		{
+			"path": "layer",
+		}
 	],
 	"settings": {
 		"python.formatting.provider": "black",
@@ -34,7 +42,9 @@
 		  "**/.pytest_cache": true,
 		  "**/*.iml": true,
 		  ".coverage": true,
-		  "dist": true
+		  "**/dist": true,
+		  ".cdk.staging": true,
+		  "cdk.out": true,
 		}
 	}
 }
