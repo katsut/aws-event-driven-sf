@@ -60,13 +60,15 @@ class CdkStack(Stack):
             result=sfn.Result.from_string("Step started."),
         )
 
-        definition: sfn.IChainable = (
-            sfnt.LambdaInvoke(
-                self, "ReceiveEvent", lambda_function=event_receiver_function
-            )
-            .next(put_event)
-            .next(sfn.Succeed(self, "WorkflowState"))
+        branch_state = sfn.Choice(self, "CheckMessage")
+        left_branch = branch_state.when(
+            sfn.Condition.string_equals("$.Payload.message", "1"), put_event
         )
+        right_branch = branch_state.otherwise(sfn.Succeed(self, "StateMachineFinished"))
+
+        definition: sfn.IChainable = sfnt.LambdaInvoke(
+            self, "ReceiveEvent", lambda_function=event_receiver_function
+        ).next(branch_state)
 
         workflow_state_macine = sfn.StateMachine(
             self,
