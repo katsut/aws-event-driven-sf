@@ -1,4 +1,9 @@
+from dataclasses import dataclass
+from attr import frozen
 from aws_cdk import Stack, aws_lambda
+from aws_cdk import aws_stepfunctions as sfn
+from aws_cdk import aws_events as events
+from aws_cdk import aws_stepfunctions_tasks as sfnt
 from constructs import Construct
 
 
@@ -15,13 +20,53 @@ class CdkStack(Stack):
             ],
         )
 
-        event_receiver = aws_lambda.Function(
+        event_receiver_function = aws_lambda.Function(
             self,
-            "workflows-api",
+            "example_event_receiver",
             runtime=aws_lambda.Runtime.PYTHON_3_10,
-            handler="workflow.index.handler",
+            handler="event_receiver.index.lambda_handler",
             code=aws_lambda.Code.from_asset("../app/event_receiver/dist/module.zip"),
             layers=[lambda_common_layer],
             environment={},
             tracing=aws_lambda.Tracing.ACTIVE,
+        )
+
+        put_event = sfnt.EventBridgePutEvents(
+            self,
+            "PutEvents",
+            entries=[
+                sfnt.EventBridgePutEventsEntry(
+                    detail=sfn.TaskInput.from_object(
+                        {
+                            "message": sfn.JsonPath.string_at("$.Payload.message"),
+                            "payload": sfn.JsonPath.entire_payload,
+                        }
+                    ),
+                    detail_type="move_token",
+                    source="workflow.application",
+                )
+            ],
+        )
+
+        ## TODO Implements EventBridgeScheduler Resource
+
+        logging_state = sfn.Pass(
+            self,
+            "LoggingStateStarted",
+            result_path="$.LoggingStateResult",
+            result=sfn.Result.from_string("Step started."),
+        )
+
+        definition: sfn.IChainable = (
+            sfnt.LambdaInvoke(
+                self, "ReceiveEvent", lambda_function=event_receiver_function
+            )
+            .next(put_event)
+            .next(sfn.Succeed(self, "WorkflowState"))
+        )
+
+        workflow_state_macine = sfn.StateMachine(
+            self,
+            "WorkflowStateMachine",
+            definition=definition,
         )

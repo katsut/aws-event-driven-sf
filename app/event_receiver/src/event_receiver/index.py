@@ -12,4 +12,4 @@ logger = Logger(service="APP")
     correlation_id_path=correlation_paths.EVENT_BRIDGE, log_event=True
 )
 def lambda_handler(event, context):
-    return {"statusCode": 200, "body": json.dumps({"message": "OK"})}
+    return {"status": "succeeded", "message": "OK"}
