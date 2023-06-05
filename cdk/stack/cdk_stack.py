@@ -27,7 +27,10 @@ class CdkStack(Stack):
             handler="event_receiver.index.lambda_handler",
             code=aws_lambda.Code.from_asset("../app/event_receiver/dist/module.zip"),
             layers=[lambda_common_layer],
-            environment={},
+            environment={
+                "POWERTOOLS_SERVICE_NAME": "example_event_receiver",
+                "LOG_LEVEL": "DEBUG",
+            },
             tracing=aws_lambda.Tracing.ACTIVE,
         )
 
