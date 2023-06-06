@@ -15,3 +15,12 @@ logger = Logger(service="APP")
     correlation_id_path=correlation_paths.EVENT_BRIDGE, log_event=True
 )
 def lambda_handler(event: EventBridgeEvent, context: LambdaContext):
+    try:
+        timestamp = datetime.fromisoformat(event.time)
+        return {
+            "status": "succeeded",
+            "node": {"node_id": "2", "node_type": "end_event"},
+        }
+
+    except Exception as e:
+        logger.exception(e)

@@ -53,22 +53,38 @@ class CdkStack(Stack):
 
         ## TODO Implements EventBridgeScheduler Resource
 
-        logging_state = sfn.Pass(
+        start_event_state: sfn.Pass = sfn.Pass(
             self,
-            "LoggingStateStarted",
-            result_path="$.LoggingStateResult",
-            result=sfn.Result.from_string("Step started."),
+            "start",
+            result=sfn.Result.from_object(
+                {"Payload": {"node": {"node_id": "1", "node_type": "start_event"}}}
+            ),  # TODO implements lambda
         )
 
-        branch_state = sfn.Choice(self, "CheckMessage")
-        left_branch = branch_state.when(
-            sfn.Condition.string_equals("$.Payload.message", "1"), put_event
-        )
-        right_branch = branch_state.otherwise(sfn.Succeed(self, "StateMachineFinished"))
-
-        definition: sfn.IChainable = sfnt.LambdaInvoke(
+        find_next_node_state = sfnt.LambdaInvoke(
             self, "ReceiveEvent", lambda_function=event_receiver_function
-        ).next(branch_state)
+        )
+
+        node_type_branch_state: sfn.Choice = sfn.Choice(self, "node_type_branch")
+
+        node_execution_create_state: sfn.Pass = sfn.Pass(self, "node_execution_create")
+        node_execution_update_state: sfn.Pass = sfn.Pass(self, "node_execution_update")
+        run_activity_state: sfn.Pass = sfn.Pass(self, "activity_run")
+        failed_state: sfn.Fail = sfn.Fail(self, "failed")
+        succeed_state: sfn.Succeed = sfn.Succeed(self, "succeeded")
+
+        end_event_state: sfn.Pass = sfn.Pass(self, "end")
+        definition: sfn.IChainable = start_event_state.next(
+            node_type_branch_state.when(
+                sfn.Condition.string_equals("$.Payload.node.node_type", "start_event"),
+                find_next_node_state,  # move to next node
+            )
+            .when(
+                sfn.Condition.string_equals("$.Payload.node.node_type", "end_event"),
+                end_event_state,
+            )
+            .otherwise(failed_state)
+        )
 
         workflow_state_macine = sfn.StateMachine(
             self,
