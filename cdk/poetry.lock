@@ -21,14 +21,14 @@ tests-no-zope = ["cloudpickle", "hypothesis", "mypy (>=1.1.1)", "pympler", "pyte
 
 [[package]]
 name = "aws-cdk-asset-awscli-v1"
-version = "2.2.185"
+version = "2.2.186"
 description = "A library that contains the AWS CLI for use in Lambda Layers"
 category = "main"
 optional = false
 python-versions = "~=3.7"
 files = [
-    {file = "aws-cdk.asset-awscli-v1-2.2.185.tar.gz", hash = "sha256:b34e06eb71a5fdfd2eed9b7d7d83367521270f8578f7b5347d224ae2a18fcf95"},
-    {file = "aws_cdk.asset_awscli_v1-2.2.185-py3-none-any.whl", hash = "sha256:2a8bec971f4b79f4582d6eba6c36a7531f039374e99949ae99586668ee97591f"},
+    {file = "aws-cdk.asset-awscli-v1-2.2.186.tar.gz", hash = "sha256:36cfecbace5770f1b7cf35b8c8007939d10b7d7065538f937f30c4d46e978e91"},
+    {file = "aws_cdk.asset_awscli_v1-2.2.186-py3-none-any.whl", hash = "sha256:1a19e2bce822675996a4ee9a469f27a8e5d78b6f3c85070826617aece52f8c06"},
 ]
 
 [package.dependencies]
@@ -109,14 +109,14 @@ exceptiongroup = {version = "*", markers = "python_version < \"3.11\""}
 
 [[package]]
 name = "constructs"
-version = "10.2.40"
+version = "10.2.44"
 description = "A programming model for software-defined state"
 category = "main"
 optional = false
 python-versions = "~=3.7"
 files = [
-    {file = "constructs-10.2.40-py3-none-any.whl", hash = "sha256:9cf37f50b79fefc3d1d0cd71102b7baf084e9bfbf15a0dce7864809e6675db07"},
-    {file = "constructs-10.2.40.tar.gz", hash = "sha256:4fc53214b6dc99285848be24350dda17d053abd66e6c4ef09a46b437208b7f2a"},
+    {file = "constructs-10.2.44-py3-none-any.whl", hash = "sha256:35a11bf24c0d7fb050043a6a04880e7900abd424ecd6cecaf3a6ea9e1d85d36a"},
+    {file = "constructs-10.2.44.tar.gz", hash = "sha256:076b803e465114e3f3ff25b9e6c61881a2f68840614986690f7f5d1ec5e737a9"},
 ]
 
 [package.dependencies]

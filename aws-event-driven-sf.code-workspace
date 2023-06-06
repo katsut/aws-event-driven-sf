@@ -45,6 +45,7 @@
 		  "**/dist": true,
 		  ".cdk.staging": true,
 		  "cdk.out": true,
-		}
+		},
+		"mssql.intelliSense.enableIntelliSense": false
 	}
 }

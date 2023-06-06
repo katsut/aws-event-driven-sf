@@ -34,35 +34,61 @@ class CdkStack(Stack):
             tracing=aws_lambda.Tracing.ACTIVE,
         )
 
-        put_event = sfnt.EventBridgePutEvents(
-            self,
-            "PutEvents",
-            entries=[
-                sfnt.EventBridgePutEventsEntry(
-                    detail=sfn.TaskInput.from_object(
-                        {
-                            "message": sfn.JsonPath.string_at("$.Payload.message"),
-                            "payload": sfn.JsonPath.entire_payload,
-                        }
-                    ),
-                    detail_type="move_token",
-                    source="workflow.application",
-                )
-            ],
-        )
+        # put_event = sfnt.EventBridgePutEvents(
+        #     self,
+        #     "PutEvents",
+        #     entries=[
+        #         sfnt.EventBridgePutEventsEntry(
+        #             detail=sfn.TaskInput.from_object(
+        #                 {
+        #                     "message": sfn.JsonPath.string_at("$.Payload.message"),
+        #                     "payload": sfn.JsonPath.entire_payload,
+        #                 }
+        #             ),
+        #             detail_type="move_token",
+        #             source="workflow.application",
+        #         )
+        #     ],
+        # )
 
         ## TODO Implements EventBridgeScheduler Resource
 
+        payload = {
+            "Payload": {
+                "node_execution": {
+                    "node_execution_id": "node_execution_1",
+                    "node": {"node_id": "start-0001", "node_type": "StartEvent"},
+                    "started_at": "2023-06-06T13:17:09.917285+00:00",
+                    "finished_at": None,
+                    "status": "Started",
+                },
+                "workflow_execution": {
+                    "workflow_execution_id": "workflow_execution_1",
+                    "workflow_document_id": "workflow_document_1",
+                    "graph": {
+                        "flows": [
+                            {
+                                "sequence_flow_id": "flow-0001",
+                                "inbound_node_id": "start-0001",
+                                "outbound_node_id": "end-0001",
+                            }
+                        ],
+                        "nodes": [
+                            {"node_id": "start-0001", "node_type": "StartEvent"},
+                            {"node_id": "start-0002", "node_type": "EndEvent"},
+                        ],
+                    },
+                },
+            }
+        }
         start_event_state: sfn.Pass = sfn.Pass(
             self,
             "start",
-            result=sfn.Result.from_object(
-                {"Payload": {"node": {"node_id": "1", "node_type": "start_event"}}}
-            ),  # TODO implements lambda
+            result=sfn.Result.from_object(payload),  # TODO implements lambda
         )
 
         find_next_node_state = sfnt.LambdaInvoke(
-            self, "ReceiveEvent", lambda_function=event_receiver_function
+            self, "find_next_node", lambda_function=event_receiver_function
         )
 
         node_type_branch_state: sfn.Choice = sfn.Choice(self, "node_type_branch")
@@ -76,12 +102,22 @@ class CdkStack(Stack):
         end_event_state: sfn.Pass = sfn.Pass(self, "end")
         definition: sfn.IChainable = start_event_state.next(
             node_type_branch_state.when(
-                sfn.Condition.string_equals("$.Payload.node.node_type", "start_event"),
-                find_next_node_state,  # move to next node
+                sfn.Condition.string_equals(
+                    "$.Payload.node_execution.node.node_type", "StartEvent"
+                ),
+                find_next_node_state.next(node_type_branch_state),  # move to next node
             )
             .when(
-                sfn.Condition.string_equals("$.Payload.node.node_type", "end_event"),
+                sfn.Condition.string_equals(
+                    "$.Payload.node_execution.node.node_type", "EndEvent"
+                ),
                 end_event_state,
+            )
+            .when(
+                sfn.Condition.string_equals(
+                    "$.Payload.node_execution.node.node_type", "Activity"
+                ),
+                run_activity_state,
             )
             .otherwise(failed_state)
         )

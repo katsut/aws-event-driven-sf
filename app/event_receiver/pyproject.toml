@@ -10,7 +10,14 @@ python = "^3.10"
 
 [tool.poetry.group.dev.dependencies]
 lambda-common = {path = "../../layer/lambda_common", develop = true}
+pytest = "^7.3.1"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+addopts = "-ra -q"
+testpaths = [
+    "tests"
+]
