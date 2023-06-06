@@ -1,3 +1,4 @@
+import dataclasses
 from datetime import datetime, timezone
 from aws_xray_sdk.core import xray_recorder
 from aws_lambda_powertools import Logger
@@ -31,24 +32,30 @@ def lambda_handler(event, context: LambdaContext):
         payload = parse_obj_as(Payload, event["Payload"])
         previous_node_id = payload.node_execution.node.node_id
 
-        # def is_downstream_flow(flow: SequenceFlow, node_id: str):
-        #     return (
-        #         flow.inbound_node_id == node_id
-        #     )  # If Inbound is the same as specified, downstream flow
-
-        downstream_flow = first_true(
-            payload.workflow_execution.graph.flows,
-            lambda f: f.inbound_node_id == previous_node_id,
+        downstream_flow = next(
+            (
+                flow
+                for flow in payload.workflow_execution.graph.flows
+                if flow.inbound_node_id == previous_node_id
+            ),
             None,
         )
         if not downstream_flow:
             raise ValueError(f"Invalid argument graph or node_id {payload}")
 
-        next_node = first_true(
-            payload.workflow_execution.graph.nodes,
+        logger.info(f"downstream_flow: {downstream_flow}")
+
+        next_node = next(
+            (
+                node
+                for node in payload.workflow_execution.graph.nodes
+                if node.node_id == downstream_flow.outbound_node_id
+            ),
+            None,
         )
         if not next_node:
             raise ValueError(f"Invalid graph {payload}")
+        logger.info(f"next_node: {next_node}")
 
         node_execution = NodeExecution(
             node_execution_id=str(uuid.uuid4()).replace("-", ""),
@@ -57,14 +64,11 @@ def lambda_handler(event, context: LambdaContext):
             finished_at=None,
         )
 
-        return json.dumps(
-            {
-                "status": "succeeded",
-                "node_execution": node_execution,
-                "workflow_execution": payload.workflow_execution,
-            },
-            default=pydantic_encoder,
-        )
+        return {
+            "status": "succeeded",
+            "node_execution": dataclasses.asdict(node_execution),
+            "workflow_execution": dataclasses.asdict(payload.workflow_execution),
+        }
 
     except Exception as e:
         logger.exception(e)

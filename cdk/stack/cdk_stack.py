@@ -1,9 +1,11 @@
 from dataclasses import dataclass
+import json
 from attr import frozen
 from aws_cdk import Stack, aws_lambda
 from aws_cdk import aws_stepfunctions as sfn
 from aws_cdk import aws_events as events
 from aws_cdk import aws_stepfunctions_tasks as sfnt
+import aws_cdk
 from constructs import Construct
 
 
@@ -59,7 +61,7 @@ class CdkStack(Stack):
                     "node_execution_id": "node_execution_1",
                     "node": {"node_id": "start-0001", "node_type": "StartEvent"},
                     "started_at": "2023-06-06T13:17:09.917285+00:00",
-                    "finished_at": None,
+                    "finished_at": "",
                     "status": "Started",
                 },
                 "workflow_execution": {
@@ -75,7 +77,7 @@ class CdkStack(Stack):
                         ],
                         "nodes": [
                             {"node_id": "start-0001", "node_type": "StartEvent"},
-                            {"node_id": "start-0002", "node_type": "EndEvent"},
+                            {"node_id": "end-0001", "node_type": "EndEvent"},
                         ],
                     },
                 },
@@ -126,4 +128,5 @@ class CdkStack(Stack):
             self,
             "WorkflowStateMachine",
             definition=definition,
+            timeout=aws_cdk.Duration.minutes(3),
         )
