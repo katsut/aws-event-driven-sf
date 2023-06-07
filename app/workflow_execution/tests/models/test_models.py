@@ -2,8 +2,8 @@ from datetime import datetime, timezone
 import json
 from more_itertools import first_true
 from pytest import fixture
-from event_receiver.index import Payload
-from event_receiver.models import (
+from find_next_nodes.index import Payload
+from find_next_nodes.models import (
     EndEvent,
     Graph,
     NodeExecution,

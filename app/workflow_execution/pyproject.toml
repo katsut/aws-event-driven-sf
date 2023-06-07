@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "event_receiver"
+name = "workflow_execution"
 version = "0.1.0"
 description = ""
 authors = ["katsut"]

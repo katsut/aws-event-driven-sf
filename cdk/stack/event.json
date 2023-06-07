@@ -1,0 +1,34 @@
+{
+    "Payload": {
+        "node_execution": {
+            "node_execution_id": "node_execution_1",
+            "node": {"node_id": "start-0001", "node_type": "StartEvent"},
+            "started_at": "2023-06-06T13:17:09.917285+00:00",
+            "finished_at": "",
+            "status": "Started"
+        },
+        "workflow_execution": {
+            "workflow_execution_id": "workflow_execution_1",
+            "workflow_document_id": "workflow_document_1",
+            "graph": {
+                "flows": [
+                    {
+                        "sequence_flow_id": "flow-0001",
+                        "inbound_node_id": "start-0001",
+                        "outbound_node_id": "activity-0001"
+                    },
+                    {
+                        "sequence_flow_id": "flow-0002",
+                        "inbound_node_id": "activity-0001",
+                        "outbound_node_id": "end-0001"
+                    }
+                ],
+                "nodes": [
+                    {"node_id": "start-0001", "node_type": "StartEvent"},
+                    {"node_id": "activity-0001", "node_type": "Activity", "title": "Activity 1"},
+                    {"node_id": "end-0001", "node_type": "EndEvent"}
+                ]
+            }
+        }
+    }
+}

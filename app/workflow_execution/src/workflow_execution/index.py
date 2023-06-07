@@ -9,7 +9,7 @@ from pydantic.dataclasses import dataclass
 from more_itertools import first_true
 import uuid
 import json
-from event_receiver.models import NodeExecution, SequenceFlow, WorkflowExecution
+from find_next_nodes.models import NodeExecution, SequenceFlow, WorkflowExecution
 from pydantic.json import pydantic_encoder
 
 

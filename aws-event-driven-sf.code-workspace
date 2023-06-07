@@ -12,7 +12,7 @@
 			"path": "cdk",
 		},
 		{
-			"path": "app/event_receiver",
+			"path": "app/workflow_execution",
 		},
 		{
 			"path": "layer",

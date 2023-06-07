@@ -22,7 +22,7 @@
 cd layer/lambda_common/
 ./build_layer_script.sh
 
-cd app/event_receiver/
+cd app/find_next_nodes/
 ./build_script.sh
 
 ```
