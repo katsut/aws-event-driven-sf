@@ -12,17 +12,18 @@ from mypy_boto3_stepfunctions.type_defs import (
 )
 import boto3
 from botocore.exceptions import EndpointConnectionError
+from botocore.config import Config
 
 
 logger = Logger(service="APP")
-activity_arn = os.environ("ACTIVITY_ARN")
+activity_arn = os.environ["ACTIVITY_ARN"]
 
-config = boto3.Config(
+config = Config(
     connect_timeout=3,
     read_timeout=10,  # No running activities if response timeout
     retries={"max_attempts": 0, "mode": "standard"},
 )
-sfn: SFNClient = boto3.client("stepfunctions")
+sfn: SFNClient = boto3.client("stepfunctions", config=config)
 
 
 @logger.inject_lambda_context(

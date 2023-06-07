@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-import json
 from attr import frozen
 from aws_cdk import Stack, aws_lambda
 from aws_cdk import aws_stepfunctions as sfn
@@ -7,6 +6,7 @@ from aws_cdk import aws_events as events
 from aws_cdk import aws_stepfunctions_tasks as sfnt
 import aws_cdk
 from constructs import Construct
+from aws_cdk import aws_iam as iam
 
 
 class CdkStack(Stack):
@@ -95,7 +95,7 @@ class CdkStack(Stack):
             timeout=aws_cdk.Duration.minutes(30),
         )
 
-        find_next_nodes_function = aws_lambda.Function(
+        activity_handler_function: aws_lambda.Function = aws_lambda.Function(
             self,
             "example_workflow_activity_handler",
             runtime=aws_lambda.Runtime.PYTHON_3_10,
@@ -109,5 +109,31 @@ class CdkStack(Stack):
                 "LOG_LEVEL": "DEBUG",
                 "ACTIVITY_ARN": activity_run_definition.activity_arn,
             },
+            timeout=aws_cdk.Duration.seconds(30),
             tracing=aws_lambda.Tracing.ACTIVE,
         )
+
+        worker_policy = iam.PolicyStatement(
+            actions=[
+                "states:DescribeActivity",
+                "states:DescribeStateMachine",
+                "states:ListExecutions",
+                "states:StopExecution",
+                "states:StartSyncExecution",
+                "states:DescribeStateMachineForExecution",
+                "states:SendTaskSuccess",
+                "states:SendTaskFailure",
+                "states:DescribeExecution",
+                "states:GetExecutionHistory",
+                "states:StartExecution",
+                "states:DescribeMapRun",
+                "states:SendTaskHeartbeat",
+                "states:GetActivityTask",
+                "states:ListTagsForResource",
+            ],
+            effect=iam.Effect.ALLOW,
+            sid="ActivityWorkerPolicy",
+            resources=["*"],
+        )
+
+        activity_handler_function.add_to_role_policy(worker_policy)
