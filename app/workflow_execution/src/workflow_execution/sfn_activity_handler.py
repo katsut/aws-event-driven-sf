@@ -11,7 +11,7 @@ from mypy_boto3_stepfunctions.type_defs import (
     SendTaskSuccessInputRequestTypeDef,
 )
 import boto3
-from botocore.exceptions import EndpointConnectionError
+from botocore.exceptions import ReadTimeoutError
 from botocore.config import Config
 
 
@@ -41,10 +41,11 @@ def lambda_handler(event, context: LambdaContext):
 
             logger.info(f"run worker {type(response)} {response}")
             send_request: SendTaskSuccessInputRequestTypeDef = sfn.send_task_success(
-                output=response.input, taskToken=response.taskToken
+                output=response["input"], taskToken=response["taskToken"]
             )
             logger.info(f"send task success {send_request}")
-        except EndpointConnectionError as e:
+        except ReadTimeoutError as e:
+            logger.info(f"No more tasks exist.")
             break
         except Exception as e:
             logger.error(e)
