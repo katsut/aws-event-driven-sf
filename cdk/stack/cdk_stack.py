@@ -46,7 +46,7 @@ class CdkStack(Stack):
             result=None,  # TODO implements lambda
         )
 
-        activity_run_definition = sfn.Activity(
+        activity_run_definition: sfn.Activity = sfn.Activity(
             self,
             "run_activity_definition",
         )
@@ -93,4 +93,21 @@ class CdkStack(Stack):
             "WorkflowStateMachine",
             definition=definition,
             timeout=aws_cdk.Duration.minutes(30),
+        )
+
+        find_next_nodes_function = aws_lambda.Function(
+            self,
+            "example_workflow_activity_handler",
+            runtime=aws_lambda.Runtime.PYTHON_3_10,
+            handler="workflow_execution.sfn_activity_handler.lambda_handler",
+            code=aws_lambda.Code.from_asset(
+                "../app/workflow_execution/dist/module.zip"
+            ),
+            layers=[lambda_common_layer],
+            environment={
+                "POWERTOOLS_SERVICE_NAME": "example_workflow_activity_handler",
+                "LOG_LEVEL": "DEBUG",
+                "ACTIVITY_ARN": activity_run_definition.activity_arn,
+            },
+            tracing=aws_lambda.Tracing.ACTIVE,
         )
