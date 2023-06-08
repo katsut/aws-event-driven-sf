@@ -1,10 +1,12 @@
 # Example for Implementation of BPMN engine with step function
 
-## Use
+## Required
 
 - python 3.10
 - python 3.9 (cdk)
 - poetry
+
+### aws services
 
 - AWS CDK
 - AWS Stepfunctions
